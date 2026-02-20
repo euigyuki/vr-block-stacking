@@ -57,8 +57,13 @@ public class StackableBlock : NetworkBehaviour
         EvaluateStacked();
     }
 
+    float lastGrabTime;
+    const float grabDebounceTime = 0.05f;
+
     void OnGrabbed(SelectEnterEventArgs args)
     {
+        if (Time.time - lastGrabTime < grabDebounceTime) return;
+        lastGrabTime = Time.time;
         SetStacked(false);
         NotifyGrabbedServerRpc(NetworkManager.Singleton.LocalClientId);
     }
