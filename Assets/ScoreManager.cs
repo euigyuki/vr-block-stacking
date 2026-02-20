@@ -1,11 +1,34 @@
 using TMPro;
 using UnityEngine;
+using Unity.Netcode;
 
-public class ScoreManager : MonoBehaviour
+public class ScoreManager : NetworkBehaviour
 {
     public TextMeshProUGUI scoreText;
 
-    private int currentStackedCount = 0;
+    private NetworkVariable<int> currentStackedCount = new NetworkVariable<int>();
+    public int CurrentScore => currentStackedCount.Value;
+    public static ScoreManager Instance { get; private set; }
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
+    public override void OnNetworkSpawn()
+    {
+        currentStackedCount.OnValueChanged += OnScoreChanged;
+        UpdateScoreUI(currentStackedCount.Value);
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        currentStackedCount.OnValueChanged -= OnScoreChanged;
+    }
 
     private void OnEnable()
     {
@@ -17,22 +40,22 @@ public class ScoreManager : MonoBehaviour
         StackableBlock.OnStackedStateChanged -= HandleScoreChange;
     }
 
-    private void Start()
-    {
-        UpdateScoreUI();
-    }
-
     private void HandleScoreChange(StackableBlock block, bool isStacked)
     {
-        if (isStacked) currentStackedCount++;
-        else currentStackedCount = Mathf.Max(0, currentStackedCount - 1);
+        if (!IsServer) return; // only host updates the score
 
-        UpdateScoreUI();
+        if (isStacked) currentStackedCount.Value++;
+        else currentStackedCount.Value = Mathf.Max(0, currentStackedCount.Value - 1);
     }
 
-    private void UpdateScoreUI()
+    private void OnScoreChanged(int oldValue, int newValue)
+    {
+        UpdateScoreUI(newValue);
+    }
+
+    private void UpdateScoreUI(int value)
     {
         if (scoreText != null)
-            scoreText.text = "Live Score: " + currentStackedCount;
+            scoreText.text = "Live Score: " + value;
     }
 }

@@ -25,7 +25,14 @@ public class StackingArea : MonoBehaviour
 
     private readonly HashSet<GameObject> blocksInZone = new();
     private float timer;
+    public static StackingArea Instance { get; private set; }
+    public int CurrentScore { get; private set; }
 
+    void Awake()
+    {
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+        Instance = this;
+    }
     private void OnTriggerEnter(Collider other)
     {
         var block = GetBlockRoot(other);
@@ -89,7 +96,7 @@ public class StackingArea : MonoBehaviour
                 if (height > highest) highest = height;
             }
         }
-
+        CurrentScore = highest;
         scoreText.text = $"Live Score: {highest}";
     }
 
