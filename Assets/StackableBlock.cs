@@ -65,12 +65,26 @@ public class StackableBlock : NetworkBehaviour
         if (Time.time - lastGrabTime < grabDebounceTime) return;
         lastGrabTime = Time.time;
         SetStacked(false);
+
+        if (!NetworkObject.IsOwner)
+        {
+            RequestOwnershipServerRpc(NetworkManager.Singleton.LocalClientId);
+        }
+        rb.isKinematic = true;
+
         NotifyGrabbedServerRpc(NetworkManager.Singleton.LocalClientId);
     }
 
     void OnReleased(SelectExitEventArgs args)
     {
+        rb.isKinematic = false;
         NotifyReleasedServerRpc(NetworkManager.Singleton.LocalClientId, transform.position);
+    }
+
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    void RequestOwnershipServerRpc(ulong clientId)
+    {
+        NetworkObject.ChangeOwnership(clientId);
     }
 
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
@@ -102,6 +116,7 @@ public class StackableBlock : NetworkBehaviour
         int score = StackingArea.Instance != null ? StackingArea.Instance.CurrentScore : 0;
         InteractionLogger.Instance.LogEvent(playerId, gameObject.name, "released", position, score);
     }
+
     void EvaluateStacked()
     {
         if (rb == null || box == null) return;

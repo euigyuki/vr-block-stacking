@@ -16,9 +16,9 @@ public class InputTest : MonoBehaviour
     void Update()
     {
         float value = testActionValue.action.ReadValue<float>();
-        Debug.Log("Value : " + value);
+//Debug.Log("Value : " + value);
 
         bool button = testActionButton.action.IsPressed();
-        Debug.Log("Button " + button);
+  //      Debug.Log("Button " + button);
     }
 }

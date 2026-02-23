@@ -5,7 +5,17 @@ using TMPro;
 
 public class NetworkUI : MonoBehaviour
 {
-    public TMP_InputField ipInputField;
+
+    void Start()
+    {
+        Debug.Log("NetworkUI Start called - is editor: " + Application.isEditor);
+#if !UNITY_EDITOR
+            Debug.Log("Auto-connecting to host...");
+            var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+            transport.SetConnectionData("192.168.8.126", 7777);
+            NetworkManager.Singleton.StartClient();
+#endif
+    }
 
     public void StartHost()
     {
@@ -15,7 +25,7 @@ public class NetworkUI : MonoBehaviour
     public void StartClient()
     {
         var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-        transport.SetConnectionData(ipInputField.text, 7777);
+        transport.SetConnectionData("192.168.8.126", 7777);
         NetworkManager.Singleton.StartClient();
     }
 }
