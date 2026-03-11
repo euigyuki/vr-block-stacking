@@ -3804,6 +3804,7 @@ GameObject:
   - component: {fileID: 1559292355}
   - component: {fileID: 1559292357}
   - component: {fileID: 1559292356}
+  - component: {fileID: 1559292358}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -3839,7 +3840,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.Transports.UTP.UnityTransport
   m_ProtocolType: 0
-  m_UseWebSockets: 0
+  m_UseWebSockets: 1
   m_UseEncryption: 0
   m_MaxPacketQueueSize: 128
   m_MaxPayloadSize: 6144
@@ -3897,6 +3898,18 @@ MonoBehaviour:
     OldPrefabList: []
   RunInBackground: 1
   LogLevel: 1
+--- !u!114 &1559292358
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1559292354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df7fed6e7e26f3844afb8fb743cd3322, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RelayManager
 --- !u!114 &1576241722
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4161,6 +4174,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15777f26f034e2345a91fd40c964c986, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  hostPanel: {fileID: 52089796}
+  joinCodeDisplay: {fileID: 0}
+  clientPanel: {fileID: 0}
+  statusText: {fileID: 1578269177}
 --- !u!114 &1593807630
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5257,6 +5274,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: GreenBlock
       objectReference: {fileID: 0}
+    - target: {fileID: 3139030133142755154, guid: 4c232ff2e3f806540beabcb9707592a8, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 3a24305a6bc81ef48a41510651c2e54b, type: 2}
+    - target: {fileID: 3508101896985430870, guid: 4c232ff2e3f806540beabcb9707592a8, type: 3}
+      propertyPath: m_MovementType
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4693741111612924024, guid: 4c232ff2e3f806540beabcb9707592a8, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 1218109566
@@ -5384,6 +5409,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6312539807315346855, guid: 9f0afd3e1e417eb4ab5c391593196850, type: 3}
+      propertyPath: m_MovementType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7546952297845324055, guid: 9f0afd3e1e417eb4ab5c391593196850, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 3a24305a6bc81ef48a41510651c2e54b, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -5443,6 +5476,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4901013643508735253, guid: 5ef1ccc40dd940b4d93aab96575c3769, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 3a24305a6bc81ef48a41510651c2e54b, type: 2}
     - target: {fileID: 5003219437889237213, guid: 5ef1ccc40dd940b4d93aab96575c3769, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 4268038725
@@ -5458,6 +5495,10 @@ PrefabInstance:
     - target: {fileID: 7188312232629066442, guid: 5ef1ccc40dd940b4d93aab96575c3769, type: 3}
       propertyPath: m_Name
       value: RedBlock
+      objectReference: {fileID: 0}
+    - target: {fileID: 8275576450921295188, guid: 5ef1ccc40dd940b4d93aab96575c3769, type: 3}
+      propertyPath: m_MovementType
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5518,6 +5559,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5661223009055081513, guid: d7a2faa23a5bf0541becadffd1292ce3, type: 3}
+      propertyPath: m_MovementType
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 6038885993620470157, guid: d7a2faa23a5bf0541becadffd1292ce3, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 1538668933
@@ -5530,6 +5575,10 @@ PrefabInstance:
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 827666646
       objectReference: {fileID: 0}
+    - target: {fileID: 6239370295341266982, guid: d7a2faa23a5bf0541becadffd1292ce3, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 3a24305a6bc81ef48a41510651c2e54b, type: 2}
     - target: {fileID: 8446667304317776138, guid: d7a2faa23a5bf0541becadffd1292ce3, type: 3}
       propertyPath: m_Name
       value: BlackBlock
