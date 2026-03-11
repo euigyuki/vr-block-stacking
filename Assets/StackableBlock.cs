@@ -18,10 +18,14 @@ public class StackableBlock : NetworkBehaviour
     public float settleVelocity = 0.15f;
     public float checkInterval = 0.1f;
 
+    [Header("Snapping")]
+    [Tooltip("How close (in meters) the block must be to another block to snap onto it.")]
+    public float snapRadius = 0.15f;
+    [Tooltip("How quickly the block slides into snap position. Higher = faster.")]
+    public float snapSpeed = 20f;
+
     public bool IsStacked { get; private set; }
 
-    // Authoritative position/rotation. Only the server writes these.
-    // Clients read them to display the block in the correct position.
     private NetworkVariable<Vector3> _networkPosition = new NetworkVariable<Vector3>(
         Vector3.zero,
         NetworkVariableReadPermission.Everyone,
@@ -45,16 +49,13 @@ public class StackableBlock : NetworkBehaviour
     XRGrabInteractable grab;
     float timer;
 
-    // True only on the client that is currently holding this block locally.
     private bool _isLocallyHeld = false;
+    private bool _isSnapping = false;
+    private Vector3 _snapTarget;
 
-    // How often the grabbing client sends its position to the server (~30 Hz).
     private const float PositionSendInterval = 0.033f;
     private float _positionSendTimer = 0f;
 
-    // Tracks which block each player is currently holding.
-    // Prevents a player from grabbing two blocks simultaneously.
-    // Key: clientId, Value: the block being held.
     private static Dictionary<ulong, StackableBlock> _heldByPlayer
         = new Dictionary<ulong, StackableBlock>();
 
@@ -87,20 +88,14 @@ public class StackableBlock : NetworkBehaviour
     {
         if (IsServer)
         {
-            // Server runs full physics simulation.
             rb.isKinematic = false;
         }
         else
         {
-            // Clients do not simulate physics — they only mirror server position.
-            // This prevents the two Rigidbodies from producing different results
-            // and fighting each other through NetworkVariable updates.
             rb.isKinematic = true;
-
             _networkPosition.OnValueChanged += OnPositionChanged;
             _networkRotation.OnValueChanged += OnRotationChanged;
 
-            // Apply initial state immediately on late join.
             if (_networkPosition.Value != Vector3.zero)
             {
                 transform.position = _networkPosition.Value;
@@ -118,11 +113,8 @@ public class StackableBlock : NetworkBehaviour
         }
     }
 
-    // Called on clients when the server broadcasts a new position.
     private void OnPositionChanged(Vector3 oldPos, Vector3 newPos)
     {
-        // While this client is holding the block, local hand tracking drives
-        // position — do not override it with stale server data.
         if (_isLocallyHeld) return;
         transform.position = newPos;
     }
@@ -137,7 +129,6 @@ public class StackableBlock : NetworkBehaviour
     {
         if (_isLocallyHeld)
         {
-            // Grabbing client pushes its position to the server at ~30 Hz.
             _positionSendTimer += Time.deltaTime;
             if (_positionSendTimer >= PositionSendInterval)
             {
@@ -147,13 +138,27 @@ public class StackableBlock : NetworkBehaviour
             return;
         }
 
-        // Server broadcasts physics-simulated position to all clients.
         if (IsServer)
         {
+            // Smoothly slide the block into snap position on the server.
+            if (_isSnapping)
+            {
+                transform.position = Vector3.MoveTowards(
+                    transform.position, _snapTarget, snapSpeed * Time.deltaTime);
+
+                if (Vector3.Distance(transform.position, _snapTarget) < 0.001f)
+                {
+                    transform.position = _snapTarget;
+                    _isSnapping = false;
+                    rb.isKinematic = false; // re-enable physics once settled
+                    rb.linearVelocity = Vector3.zero;
+                    rb.angularVelocity = Vector3.zero;
+                }
+            }
+
             _networkPosition.Value = transform.position;
             _networkRotation.Value = transform.rotation;
 
-            // Stacking evaluation runs only on server.
             timer += Time.deltaTime;
             if (timer >= checkInterval)
             {
@@ -163,15 +168,9 @@ public class StackableBlock : NetworkBehaviour
         }
     }
 
-    /// <summary>
-    /// Sent by the grabbing client at ~30 Hz.
-    /// Server applies the position so physics and all observers stay in sync.
-    /// </summary>
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     void UpdateHeldPositionServerRpc(Vector3 position, Quaternion rotation)
     {
-        // While held, keep the server-side Rigidbody kinematic so physics
-        // does not fight the incoming hand position.
         rb.isKinematic = true;
         transform.position = position;
         transform.rotation = rotation;
@@ -189,12 +188,10 @@ public class StackableBlock : NetworkBehaviour
 
         ulong localId = NetworkManager.Singleton.LocalClientId;
 
-        // Prevent grabbing a second block while already holding one.
         if (_heldByPlayer.TryGetValue(localId, out StackableBlock alreadyHeld))
         {
             if (alreadyHeld != this)
             {
-                // Force-cancel this grab attempt.
                 grab.interactionManager.CancelInteractableSelection(
                     (IXRSelectInteractable)grab);
                 Debug.Log("[StackableBlock] Grab blocked: player already holding "
@@ -235,7 +232,7 @@ public class StackableBlock : NetworkBehaviour
             return;
         }
 
-        NotifyReleasedServerRpc(localId, transform.position);
+        NotifyReleasedServerRpc(localId, transform.position, transform.rotation);
     }
 
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
@@ -248,9 +245,7 @@ public class StackableBlock : NetworkBehaviour
     void NotifyGrabbedServerRpc(ulong playerId)
     {
         _isBeingGrabbed.Value = true;
-
-        // Re-enable kinematic on server side while block is held.
-        // UpdateHeldPositionServerRpc will keep it positioned correctly.
+        _isSnapping = false;
         rb.isKinematic = true;
 
         Debug.Log($"[LOG] Player {playerId} grabbed {gameObject.name} at time {Time.time}");
@@ -265,22 +260,94 @@ public class StackableBlock : NetworkBehaviour
     }
 
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    void NotifyReleasedServerRpc(ulong playerId, Vector3 position)
+    void NotifyReleasedServerRpc(ulong playerId, Vector3 releasePosition, Quaternion releaseRotation)
     {
         _isBeingGrabbed.Value = false;
+        transform.position = releasePosition;
+        transform.rotation = releaseRotation;
 
-        // Re-enable physics on the server so the block falls naturally.
-        rb.isKinematic = false;
-        rb.linearVelocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
+        // Check if this block is near any other block.
+        Vector3 snapPos;
+        if (TryFindSnapTarget(releasePosition, out snapPos))
+        {
+            // Snap: slide smoothly into position, keep kinematic during slide.
+            rb.isKinematic = true;
+            _isSnapping = true;
+            _snapTarget = snapPos;
+            Debug.Log($"[StackableBlock] Snapping {gameObject.name} to {snapPos}");
+        }
+        else
+        {
+            // No nearby block — fall with gravity normally.
+            rb.isKinematic = false;
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
 
         Debug.Log($"[LOG] Player {playerId} released {gameObject.name} " +
-                  $"at position {position} at time {Time.time}");
+                  $"at position {releasePosition} at time {Time.time}");
 
         if (InteractionLogger.Instance != null)
-            StartCoroutine(LogReleasedDelayed(playerId, position));
+            StartCoroutine(LogReleasedDelayed(playerId, releasePosition));
         else
             Debug.LogWarning("[LOG] InteractionLogger.Instance is null!");
+    }
+
+    /// <summary>
+    /// Looks for any nearby block and computes the clean snap-on-top position.
+    /// Returns true if a snap target was found.
+    /// </summary>
+    private bool TryFindSnapTarget(Vector3 releasePos, out Vector3 snapPosition)
+    {
+        snapPosition = Vector3.zero;
+
+        float blockHeight = box != null ? box.bounds.size.y : 1f;
+        Collider[] nearby = Physics.OverlapSphere(releasePos, snapRadius, blockLayer);
+
+        StackableBlock bestTarget = null;
+        float bestDist = float.MaxValue;
+
+        foreach (Collider col in nearby)
+        {
+            if (col.gameObject == gameObject) continue;
+
+            StackableBlock other = col.GetComponent<StackableBlock>();
+            if (other == null) continue;
+            if (other._isBeingGrabbed.Value) continue;
+
+            float dist = Vector3.Distance(releasePos, col.transform.position);
+            if (dist < bestDist)
+            {
+                bestDist = dist;
+                bestTarget = other;
+            }
+        }
+
+        if (bestTarget == null) return false;
+
+        // Snap position: directly on top of the target block, aligned to its XZ.
+        // Stack as high as needed if blocks are already stacked there.
+        Vector3 candidate = bestTarget.transform.position
+            + Vector3.up * blockHeight;
+
+        // Walk upward until the candidate position is clear.
+        int maxStack = 10;
+        for (int i = 0; i < maxStack; i++)
+        {
+            Collider[] atCandidate = Physics.OverlapSphere(candidate, blockHeight * 0.4f, blockLayer);
+            bool occupied = false;
+            foreach (Collider c in atCandidate)
+            {
+                if (c.gameObject == gameObject) continue;
+                occupied = true;
+                break;
+            }
+            if (!occupied) break;
+            candidate += Vector3.up * blockHeight;
+        }
+
+        snapPosition = candidate;
+        return true;
     }
 
     IEnumerator LogReleasedDelayed(ulong playerId, Vector3 position)
@@ -294,6 +361,7 @@ public class StackableBlock : NetworkBehaviour
     void EvaluateStacked()
     {
         if (rb == null || box == null) return;
+        if (_isSnapping) return; // do not evaluate while sliding into place
         if (rb.linearVelocity.magnitude > settleVelocity)
         {
             SetStacked(false);
