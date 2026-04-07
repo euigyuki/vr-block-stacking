@@ -1260,7 +1260,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 2074194169
+  GlobalObjectIdHash: 4076563337
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -1332,7 +1332,6 @@ GameObject:
   - component: {fileID: 575780336}
   - component: {fileID: 575780340}
   - component: {fileID: 575780341}
-  - component: {fileID: 575780342}
   m_Layer: 0
   m_Name: XR Origin (VR)
   m_TagString: Untagged
@@ -1580,22 +1579,6 @@ MonoBehaviour:
     m_InputActionReference: {fileID: 1293277836}
     m_ObjectReferenceObject: {fileID: 0}
     m_ManualValue: {x: 0, y: 0}
---- !u!114 &575780342
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 575780332}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e71378f28c8ad943815fe9d4fc91c33, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SpeechLogger
-  SampleRate: 16000
-  BufferLengthSeconds: 120
-  FlushInterval: 10
-  SyncInterval: 30
 --- !u!114 &583272042
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2045,7 +2028,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 712593389}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
   m_Name: 
@@ -2091,7 +2074,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 712593389}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f6c0be61502bb534f922ebb746851216, type: 3}
   m_Name: 
@@ -2299,7 +2282,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1168321531}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
   m_Name: 
@@ -2345,7 +2328,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1168321531}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f6c0be61502bb534f922ebb746851216, type: 3}
   m_Name: 
@@ -3822,7 +3805,6 @@ GameObject:
   - component: {fileID: 1559292357}
   - component: {fileID: 1559292356}
   - component: {fileID: 1559292358}
-  - component: {fileID: 1559292359}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -3928,19 +3910,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df7fed6e7e26f3844afb8fb743cd3322, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RelayManager
---- !u!114 &1559292359
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1559292354}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2adc03e04d980bc41ad4c6c3f9a00361, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::VivoxManager
-  ChannelName: dpip_session
 --- !u!114 &1576241722
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4560,7 +4529,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1831050483}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f6c0be61502bb534f922ebb746851216, type: 3}
   m_Name: 
@@ -4577,7 +4546,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1831050483}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
   m_Name: 
@@ -5296,7 +5265,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2116700572}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
   m_Name: 
@@ -5342,7 +5311,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2116700572}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f6c0be61502bb534f922ebb746851216, type: 3}
   m_Name: 
@@ -5382,7 +5351,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 378669187
+  GlobalObjectIdHash: 1677246918
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -5508,10 +5477,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7201522694644396015, guid: 4c232ff2e3f806540beabcb9707592a8, type: 3}
-      propertyPath: snapRadius
-      value: 0.3
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -5550,10 +5515,6 @@ PrefabInstance:
     - target: {fileID: 4315032655740350650, guid: 9f0afd3e1e417eb4ab5c391593196850, type: 3}
       propertyPath: m_Layer
       value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 5049201009344355976, guid: 9f0afd3e1e417eb4ab5c391593196850, type: 3}
-      propertyPath: snapRadius
-      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 6135377912761695663, guid: 9f0afd3e1e417eb4ab5c391593196850, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5666,10 +5627,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2620203951552312974, guid: 5ef1ccc40dd940b4d93aab96575c3769, type: 3}
-      propertyPath: snapRadius
-      value: 0.3
-      objectReference: {fileID: 0}
     - target: {fileID: 4901013643508735253, guid: 5ef1ccc40dd940b4d93aab96575c3769, type: 3}
       propertyPath: m_Material
       value: 
@@ -5721,10 +5678,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1381845181251968222, guid: d7a2faa23a5bf0541becadffd1292ce3, type: 3}
-      propertyPath: snapRadius
-      value: 0.3
-      objectReference: {fileID: 0}
     - target: {fileID: 1943476148568129117, guid: d7a2faa23a5bf0541becadffd1292ce3, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.055

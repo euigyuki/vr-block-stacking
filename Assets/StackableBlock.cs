@@ -88,7 +88,10 @@ public class StackableBlock : NetworkBehaviour
     {
         if (IsServer)
         {
-            rb.isKinematic = false;
+            // Start kinematic — blocks are frozen until grabbed.
+            // We do not use gravity at all in this setup.
+            rb.isKinematic = true;
+            rb.constraints = RigidbodyConstraints.FreezeAll;
         }
         else
         {
@@ -150,9 +153,16 @@ public class StackableBlock : NetworkBehaviour
                 {
                     transform.position = _snapTarget;
                     _isSnapping = false;
-                    rb.isKinematic = false; // re-enable physics once settled
+                    // Freeze all constraints so the physics solver cannot jitter
+                    // the block after snapping. Keep isKinematic = false so the
+                    // block remains a solid collider — other blocks and hands
+                    // cannot pass through it or push it into the table.
+                    // Constraints are cleared in NotifyGrabbedServerRpc so the
+                    // block can move freely again when picked up.
+                    rb.isKinematic = true;
                     rb.linearVelocity = Vector3.zero;
                     rb.angularVelocity = Vector3.zero;
+                    rb.constraints = RigidbodyConstraints.FreezeAll;
                 }
             }
 
@@ -172,6 +182,7 @@ public class StackableBlock : NetworkBehaviour
     void UpdateHeldPositionServerRpc(Vector3 position, Quaternion rotation)
     {
         rb.isKinematic = true;
+        rb.constraints = RigidbodyConstraints.None;
         transform.position = position;
         transform.rotation = rotation;
         _networkPosition.Value = position;
@@ -247,6 +258,7 @@ public class StackableBlock : NetworkBehaviour
         _isBeingGrabbed.Value = true;
         _isSnapping = false;
         rb.isKinematic = true;
+        rb.constraints = RigidbodyConstraints.None; // clear any freeze applied after snapping
 
         Debug.Log($"[LOG] Player {playerId} grabbed {gameObject.name} at time {Time.time}");
         if (InteractionLogger.Instance != null)
@@ -278,10 +290,15 @@ public class StackableBlock : NetworkBehaviour
         }
         else
         {
-            // No nearby block — fall with gravity normally.
-            rb.isKinematic = false;
+            // No nearby block — freeze exactly where released.
+            // No gravity, no physics settling. This eliminates all network
+            // sync jitter and table-sinking artifacts on Quest clients.
+            rb.isKinematic = true;
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
+            rb.constraints = RigidbodyConstraints.FreezeAll;
+            _networkPosition.Value = transform.position;
+            _networkRotation.Value = transform.rotation;
         }
 
         Debug.Log($"[LOG] Player {playerId} released {gameObject.name} " +
@@ -325,10 +342,19 @@ public class StackableBlock : NetworkBehaviour
 
         if (bestTarget == null) return false;
 
-        // Snap position: directly on top of the target block, aligned to its XZ.
-        // Stack as high as needed if blocks are already stacked there.
-        Vector3 candidate = bestTarget.transform.position
-            + Vector3.up * blockHeight;
+        // Snap position: top surface of the target block + half the height of
+        // the block being placed. This accounts for center-pivot meshes and
+        // eliminates the visible air gap between stacked blocks.
+        BoxCollider targetBox = bestTarget.GetComponent<BoxCollider>();
+        float targetTopY = targetBox != null
+            ? targetBox.bounds.max.y
+            : bestTarget.transform.position.y + (blockHeight / 2f);
+
+        Vector3 candidate = new Vector3(
+            bestTarget.transform.position.x,
+            targetTopY + (blockHeight / 2f),
+            bestTarget.transform.position.z
+        );
 
         // Walk upward until the candidate position is clear.
         int maxStack = 10;

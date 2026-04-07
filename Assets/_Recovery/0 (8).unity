@@ -1260,7 +1260,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 2074194169
+  GlobalObjectIdHash: 2599305171
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -1332,7 +1332,6 @@ GameObject:
   - component: {fileID: 575780336}
   - component: {fileID: 575780340}
   - component: {fileID: 575780341}
-  - component: {fileID: 575780342}
   m_Layer: 0
   m_Name: XR Origin (VR)
   m_TagString: Untagged
@@ -1580,22 +1579,6 @@ MonoBehaviour:
     m_InputActionReference: {fileID: 1293277836}
     m_ObjectReferenceObject: {fileID: 0}
     m_ManualValue: {x: 0, y: 0}
---- !u!114 &575780342
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 575780332}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e71378f28c8ad943815fe9d4fc91c33, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SpeechLogger
-  SampleRate: 16000
-  BufferLengthSeconds: 120
-  FlushInterval: 10
-  SyncInterval: 30
 --- !u!114 &583272042
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3822,7 +3805,6 @@ GameObject:
   - component: {fileID: 1559292357}
   - component: {fileID: 1559292356}
   - component: {fileID: 1559292358}
-  - component: {fileID: 1559292359}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -3928,19 +3910,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df7fed6e7e26f3844afb8fb743cd3322, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RelayManager
---- !u!114 &1559292359
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1559292354}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2adc03e04d980bc41ad4c6c3f9a00361, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::VivoxManager
-  ChannelName: dpip_session
 --- !u!114 &1576241722
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5382,7 +5351,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 378669187
+  GlobalObjectIdHash: 2583931290
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
